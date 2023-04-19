@@ -138,6 +138,20 @@ class DslSpec extends AnyFlatSpec with Matchers {
     result.head should be (empty)
   }
 
+  "Removing the body element" should "remove it" in {
+    val doc = Document.createShell("")
+
+    val modifications = for {
+      d <- modifyDocument
+      _ <- d.body.foldMapM(_.remove)
+    } yield d
+
+    val result = doc.withModifications(modifications)
+
+    doc.body should not be empty
+    result.body should be (empty)
+  }
+
   "Removing an element without a parent" should "be a type error" in {
     val noParent: Element[ParentState.NoParent] = Element("div")
     assertTypeError("noParent.remove")

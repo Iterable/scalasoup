@@ -610,10 +610,11 @@ trait HasOwner {
 final class Document[A <: ParentState] private[scalasoup] (private[scalasoup] override val underlying: org.jsoup.nodes.Document) extends Element[A](underlying) {
   def location: String = underlying.location
 
-  // Not using `underlying.head` because it has a side-effect adding a head element if it doesn't exist
+  // `underlying.head` has a side-effect since 1.14.1 to add a head element if it doesn't exist
   def head: Option[Element[ParentState.HasParent]] = convertOption(underlying.selectFirst("head"))
 
-  def body: Option[Element[ParentState.HasParent]] = convertOption(underlying.body)
+  // `underlying.body` has a side-effect since 1.14.1 to add a body element if it doesn't exist
+  def body: Option[Element[ParentState.HasParent]] = convertOption(underlying.selectFirst("body"))
 
   def title: String = underlying.title
 
