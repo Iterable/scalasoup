@@ -1,4 +1,4 @@
-package org.danielnixon.scalasoup
+package com.iterable.scalasoup
 
 sealed trait ParentState
 

@@ -1,11 +1,12 @@
-package org.danielnixon.elsewhere
+package com.iterable.scalasoup
 
 import cats.effect.IO
-import org.danielnixon.scalasoup._
+import cats.effect.unsafe.IORuntime
 import org.http4s.client.middleware.FollowRedirect
-import org.scalatest._
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 
-class ElementSpec extends FlatSpec with Matchers {
+class ElementSpec extends AnyFlatSpec with Matchers {
 
   "Using an invalid regex string" should "fail to compile" in {
     val document = Document.createShell("")
@@ -31,24 +32,25 @@ class ElementSpec extends FlatSpec with Matchers {
   }
 
   "The Wikipedia readme example" should "compile" in {
-    import org.http4s.client.blaze._
+    import org.http4s.blaze.client.BlazeClientBuilder
 
-    val httpClient = FollowRedirect[IO](maxRedirects = 3)(Http1Client[IO]().unsafeRunSync())
-    val uri = "https://en.wikipedia.org/"
+    val task = BlazeClientBuilder[IO].resource.use { client =>
+      val httpClient = FollowRedirect[IO](maxRedirects = 3)(client)
+      val uri = "https://en.wikipedia.org/"
 
-    val task = httpClient.expect[String](uri).map { html =>
+      httpClient.expect[String](uri).map { html =>
 
-      val doc = ScalaSoup.parse(html, uri)
+        val doc = ScalaSoup.parse(html, uri)
 
-      println(doc.title)
-      val newsHeadlines = doc.select("#mp-itn b a")
-      for (headline <- newsHeadlines) {
-        println(s"${headline.attr("title")} ${headline.absUrl("href")}")
+        println(doc.title)
+        val newsHeadlines = doc.select("#mp-itn b a")
+        for (headline <- newsHeadlines) {
+          println(s"${headline.attr("title")} ${headline.absUrl("href")}")
+        }
       }
     }
 
-    () => task.unsafeRunSync()
-    httpClient.shutdownNow()
+    task.unsafeRunSync()(IORuntime.global)
   }
 
   // TODO: test all of the withFoo methods.

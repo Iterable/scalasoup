@@ -1,7 +1,7 @@
-package org.danielnixon.scalasoup.impl
+package com.iterable.scalasoup.impl
 
 import cats.{Id, ~>}
-import org.danielnixon.scalasoup.{Document, HasOwner, ParentState}
+import com.iterable.scalasoup.{Document, HasOwner, ParentState}
 
 private[scalasoup] object Compiler {
   def apply(document: Document[ParentState.NoParent]): ModificationA ~> Id = {

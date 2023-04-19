@@ -1,4 +1,4 @@
-package org.danielnixon.scalasoup
+package com.iterable.scalasoup
 
 object ScalaSoup {
   def parse(html: String, baseUri: String): Document[ParentState.NoParent] =
@@ -15,16 +15,16 @@ object ScalaSoup {
   def parseBodyFragment(bodyHtml: String): Document[ParentState.NoParent] =
     new Document(org.jsoup.Jsoup.parseBodyFragment(bodyHtml))
 
-  def clean(bodyHtml: String, baseUri: String, whitelist: Whitelist): String =
-    org.jsoup.Jsoup.clean(bodyHtml, baseUri, whitelist.underlying)
+  def clean(bodyHtml: String, baseUri: String, safelist: Safelist): String =
+    org.jsoup.Jsoup.clean(bodyHtml, baseUri, safelist.underlying)
 
-  def clean(bodyHtml: String, whitelist: Whitelist): String =
-    org.jsoup.Jsoup.clean(bodyHtml, whitelist.underlying)
+  def clean(bodyHtml: String, safelist: Safelist): String =
+    org.jsoup.Jsoup.clean(bodyHtml, safelist.underlying)
 
-  def clean(bodyHtml: String, baseUri: String, whitelist: Whitelist, outputSettings: OutputSettings): String =
-    org.jsoup.Jsoup.clean(bodyHtml, baseUri, whitelist.underlying, outputSettings.underlying)
+  def clean(bodyHtml: String, baseUri: String, safelist: Safelist, outputSettings: OutputSettings): String =
+    org.jsoup.Jsoup.clean(bodyHtml, baseUri, safelist.underlying, outputSettings.underlying)
 
-  def isValid(bodyHtml: String, whitelist: Whitelist): Boolean = org.jsoup.Jsoup.isValid(bodyHtml, whitelist.underlying)
+  def isValid(bodyHtml: String, safelist: Safelist): Boolean = org.jsoup.Jsoup.isValid(bodyHtml, safelist.underlying)
 
   private[scalasoup] def withClone[A <: java.lang.Cloneable, B](underlying: A)(clone: A => A)(ctor: A => B)(op: A => Unit): B = {
     val c = clone(underlying)

@@ -1,11 +1,11 @@
-package org.danielnixon.elsewhere
+package com.iterable.scalasoup.dsl
 
 import cats.implicits._
-import org.danielnixon.scalasoup._
-import org.danielnixon.scalasoup.dsl._
-import org.scalatest._
+import com.iterable.scalasoup._
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 
-class DslSpec extends FlatSpec with Matchers {
+class DslSpec extends AnyFlatSpec with Matchers {
 
   "Editing a document" should "leave the original document unchanged" in {
     val modifications = for {

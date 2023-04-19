@@ -1,7 +1,7 @@
-package org.danielnixon
+package com.iterable
 
-import org.danielnixon.scalasoup.Element.{HasParentElement, UnknownParentElement}
-import org.danielnixon.scalasoup.refined.CssSelectorValidate.CssSelector
+import com.iterable.scalasoup.Element.{HasParentElement, UnknownParentElement}
+import com.iterable.scalasoup.refined.CssSelectorValidate.CssSelector
 
 import scala.annotation.implicitNotFound
 import scala.language.implicitConversions

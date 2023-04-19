@@ -1,4 +1,4 @@
-ScalaSoup [![Build Status](https://travis-ci.org/danielnixon/scalasoup.svg?branch=master)](https://travis-ci.org/danielnixon/scalasoup)
+ScalaSoup
 =========
 
 A pure, typeful, idiomatic Scala wrapper around [JSoup](https://jsoup.org/).
@@ -28,12 +28,12 @@ Usage
 
 Add the dependency to your `build.sbt`:
 ```scala
-libraryDependencies += "org.danielnixon" %% "scalasoup" % "0.1.0-SNAPSHOT"
+libraryDependencies += "com.iterable" %% "scalasoup" % "0.1.0"
 ```
 
 Then import the `scalasoup` package and use the `ScalaSoup` object as your entrypoint everywhere you would have used `Jsoup`.
 ```scala
-import org.danielnixon.scalasoup._
+import com.iterable.scalasoup._
 
 ScalaSoup.parse(...)
 ```
@@ -46,7 +46,7 @@ The first thing to note is that JSoup's built-in http client is impure and block
 
 ```scala
 import org.http4s.client.blaze._
-import org.danielnixon.scalasoup._
+import com.iterable.scalasoup._
 
 val httpClient = FollowRedirect[IO](maxRedirects = 3)(Http1Client[IO]().unsafeRunSync())
 val uri = "https://en.wikipedia.org/"
@@ -125,14 +125,14 @@ It'd be nice if we could _batch_ our modifications and incur the cloning penalty
 
 Note that in order to use the DSL you need to add an additional dependency to your `build.sbt`:
 ```scala
-libraryDependencies += "org.danielnixon" %% "scalasoup-dsl" % "0.1.0-SNAPSHOT"
+libraryDependencies += "com.iterable" %% "scalasoup-dsl" % "0.1.0"
 ```
 
 Here's an example that makes two changes to a document, incurring the cloning cost only once.
 
 ```scala
-import org.danielnixon.scalasoup._
-import org.danielnixon.scalasoup.dsl._
+import com.iterable.scalasoup._
+import com.iterable.scalasoup.dsl._
 
 val modifications = for {
   document <- modifyDocument
@@ -158,8 +158,8 @@ Here's an example that removes `target` attributes from _all_ `a` tags. Note the
 
 ```scala
 import cats.implicits._
-import org.danielnixon.scalasoup._
-import org.danielnixon.scalasoup.dsl._
+import com.iterable.scalasoup._
+import com.iterable.scalasoup.dsl._
 
 val modifications = for {
   document <- modifyDocument
@@ -327,7 +327,7 @@ Pattern matching
 Consider the following (flawed) JSoup program:
 
 ```scala
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 val doc: org.jsoup.nodes.Document = ???
 

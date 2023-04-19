@@ -1,8 +1,8 @@
-package org.danielnixon.scalasoup
+package com.iterable.scalasoup
 
 import cats.Eq
 import cats.free.Free.liftF
-import org.danielnixon.scalasoup.impl._
+import com.iterable.scalasoup.impl._
 
 import scala.language.implicitConversions
 

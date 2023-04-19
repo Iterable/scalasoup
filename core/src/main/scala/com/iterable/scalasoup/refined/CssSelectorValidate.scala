@@ -1,4 +1,4 @@
-package org.danielnixon.scalasoup.refined
+package com.iterable.scalasoup.refined
 
 import eu.timepit.refined.api.Validate
 

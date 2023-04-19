@@ -1,6 +1,6 @@
-package org.danielnixon.scalasoup.impl
+package com.iterable.scalasoup.impl
 
-import org.danielnixon.scalasoup._
+import com.iterable.scalasoup._
 
 sealed trait ModificationA[A]
 

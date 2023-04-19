@@ -1,12 +1,11 @@
-package org.danielnixon.scalasoup
+package com.iterable.scalasoup
 
 import java.nio.charset.Charset
-
 import org.jsoup.nodes.Document.QuirksMode
 import org.jsoup.nodes.Document.OutputSettings.Syntax
 import org.jsoup.nodes.Entities.EscapeMode
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 import scala.collection.immutable.{List, Map, Set}
 import scala.util.control.Exception.catching
 import scala.util.matching.Regex
@@ -168,9 +167,6 @@ final class DataNode[A <: ParentState] private[scalasoup](private[scalasoup] ove
 }
 
 object DataNode {
-  def createFromEncoded(encodedData: String, baseUri: String): DataNode[ParentState.NoParent] =
-    new DataNode[ParentState.NoParent](org.jsoup.nodes.DataNode.createFromEncoded(encodedData, baseUri))
-
   private[scalasoup] implicit class MutableDataNode[A <: ParentState](val node: DataNode[A]) extends AnyVal {
     def setData(data: String): Unit = { node.underlying.setWholeData(data); () }
   }

@@ -1,6 +1,6 @@
-package org.danielnixon.scalasoup
+package com.iterable.scalasoup
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 import scala.collection.Iterator
 import scala.collection.immutable.{Iterable, Map}
 
