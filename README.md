@@ -3,6 +3,8 @@ ScalaSoup
 
 A pure, typeful, idiomatic Scala wrapper around [JSoup](https://jsoup.org/).
 
+_This is a fork of [danielnixon/scalasoup](https://github.com/danielnixon/scalasoup) updated to Scala `2.13.7` and JSoup `1.15.1`_
+
 Why ScalaSoup?
 --------------
 
