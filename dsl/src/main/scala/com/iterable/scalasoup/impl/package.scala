@@ -1,9 +1,10 @@
 package com.iterable.scalasoup
 
-import java.nio.charset.Charset
-
 import cats.free.Free
 import cats.free.Free.liftF
+import com.iterable.scalasoup.mutable._
+
+import java.nio.charset.Charset
 
 package object impl {
 
@@ -105,6 +106,10 @@ package object impl {
     def setTitle(title: String): Modification[Unit] = modification(_.setTitle(title))
 
     def normalise: Modification[Unit] = modification(_.normalise())
+
+    def getOrCreateHead: Modification[Element[ParentState.HasParent]] = modification(_.head())
+
+    def getOrCreateBody: Modification[Element[ParentState.HasParent]] = modification(_.body())
 
     def setCharset(charset: Charset): Modification[Unit] = modification(_.setCharset(charset))
 

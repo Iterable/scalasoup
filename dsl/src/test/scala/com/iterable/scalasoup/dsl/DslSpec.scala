@@ -161,4 +161,32 @@ class DslSpec extends AnyFlatSpec with Matchers {
     val hasParent: Option[Element[ParentState.HasParent]] = Document.createShell("").body
     hasParent.foreach(_.remove)
   }
+
+  "getOrCreateBody" should "get or create the body element if it was removed" in {
+    val doc = ScalaSoup.parse("<div></div>")
+      mutable.MutableNode(doc.body.get).remove()
+
+    doc.body shouldBe empty
+    val modifications = for {
+      d <- modifyDocument
+      _ <- d.setOutputSettings(d.outputSettings.copy(prettyPrint = false))
+      body <- d.getOrCreateBody
+      _ <- body.appendElement("span")
+    } yield d
+    doc.withModifications(modifications).html shouldBe "<html><head></head><body><span></span></body></html>"
+  }
+
+  "getOrCreateHead" should "get or create the head element if it was removed" in {
+    val doc = ScalaSoup.parse("<body></body>")
+      mutable.MutableNode(doc.head.get).remove()
+
+    doc.head shouldBe empty
+    val modifications = for {
+      d <- modifyDocument
+      _ <- d.setOutputSettings(d.outputSettings.copy(prettyPrint = false))
+      head <- d.getOrCreateHead
+      _ <- head.appendElement("script")
+    } yield d
+    doc.withModifications(modifications).html shouldBe "<html><head><script></script></head><body></body></html>"
+  }
 }

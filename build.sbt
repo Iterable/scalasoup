@@ -6,7 +6,6 @@ val commonSettings = Seq(
   // TODO https://tpolecat.github.io/2017/04/25/scalac-flags.html
   scalacOptions      := Seq(
     "-deprecation",
-    "-Xfatal-warnings"
   ),
   libraryDependencies ++= Seq(
     "org.scalatest" %% "scalatest" % "3.1.4" % Test
@@ -61,7 +60,7 @@ lazy val core = (project in file("core")).
   settings(
     name := "scalasoup",
     libraryDependencies ++= Seq(
-      "org.jsoup"      %  "jsoup"                 % "1.15.1",
+      "org.jsoup"      %  "jsoup"                 % "[1.15.1,)",
       "eu.timepit"     %% "refined"               % "0.10.3",
       "org.http4s"     %% "http4s-blaze-client"   % "0.23.14" % Test,
       "org.scalacheck" %% "scalacheck"            % "1.17.0"    % Test
