@@ -52,7 +52,7 @@ package object mutable {
 
     def setTagName(tagName: String): Unit = element.underlying.tagName(tagName)
 
-    def setAttr(attributeKey: String, attributeValue: Boolean): Unit =
+    def setBooleanAttr(attributeKey: String, attributeValue: Boolean): Unit =
       element.underlying.attr(attributeKey, attributeValue)
 
     def appendChild(child: Node[_ <: ParentState]): Unit = element.underlying.appendChild(child.underlying.clone)

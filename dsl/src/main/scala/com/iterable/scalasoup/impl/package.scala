@@ -55,8 +55,8 @@ package object impl {
 
     def setTagName(tagName: String): Modification[Unit] = modification(element, _.setTagName(tagName))
 
-    def setAttr(attributeKey: String, attributeValue: Boolean): Modification[Unit] =
-      modification(element, _.setAttr(attributeKey, attributeValue))
+    def setBooleanAttr(attributeKey: String, attributeValue: Boolean): Modification[Unit] =
+      modification(element, _.setBooleanAttr(attributeKey, attributeValue))
 
     def appendChild(child: Node[_ <: ParentState]): Modification[Unit] = modification(element, _.appendChild(child))
 

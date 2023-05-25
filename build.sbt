@@ -1,8 +1,32 @@
 
+inThisBuild(List(
+  scalaVersion := "2.13.7",
+  crossScalaVersions := Seq(scalaVersion.value),
+  organization := "com.iterable",
+  organizationName := "Iterable",
+  homepage := Some(url("https://github.com/Iterable/scalasoup")),
+  licenses := List("Apache-2.0" -> url("http://www.apache.org/licenses/LICENSE-2.0")),
+  developers := List(
+    Developer(
+      "danielnixon",
+      "Daniel Nixon",
+      "dan.nixon@gmail.com",
+      url("https://github.com/danielnixon")
+    ),
+    Developer(
+      "JonMcPherson",
+      "Jon McPherson",
+      "jon.mcpherson@iterable.com",
+      url("https://www.iterable.com")
+    ),
+  )
+))
+
+// See https://github.com/sbt/sbt-ci-release
+ThisBuild / sonatypeCredentialHost := "s01.oss.sonatype.org"
+sonatypeRepository := "https://s01.oss.sonatype.org/service/local"
+
 val commonSettings = Seq(
-  organization       := "com.iterable",
-  scalaVersion       := "2.13.7",
-  version            := "0.1.0",
   // TODO https://tpolecat.github.io/2017/04/25/scalac-flags.html
   scalacOptions      := Seq(
     "-deprecation",

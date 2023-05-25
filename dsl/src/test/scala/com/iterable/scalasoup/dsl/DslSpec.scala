@@ -25,6 +25,28 @@ class DslSpec extends AnyFlatSpec with Matchers {
     result.baseUri shouldBe "https://jsoup.org/"
   }
 
+  it should "combine separate modifyDocument chains" in {
+    val modifications1 = for {
+      d <- modifyDocument
+      _ <- d.setTitle("New Title")
+      _ <- d.setBaseUri("https://jsoup.org/")
+    } yield ()
+    val modifications2 = for {
+      d <- modifyDocument
+      _ <- d.setOutputSettings(d.outputSettings.copy(prettyPrint = false))
+      _ <- d.body.get.childNodes.last.setAttr("data-blah", "blah")
+      _ <- d.select("a").foldMapM(_.setAttr("href", "https://jsoup.org/"))
+    } yield ()
+
+    val result = ScalaSoup.parse("<html><head><title>Old Title</title></head><body><div><a></a></div></body></html>")
+      .withModifications(modifications1 flatMap { _ => modifications2 })
+
+    result.title shouldBe "New Title"
+    result.baseUri shouldBe "https://jsoup.org/"
+
+    result.body.get.html shouldBe "<div data-blah=\"blah\"><a href=\"https://jsoup.org/\"></a></div>"
+  }
+
   "The DSL" should "support combining programs" in {
     val asProgram = for {
       document <- modifyDocument
@@ -188,5 +210,21 @@ class DslSpec extends AnyFlatSpec with Matchers {
       _ <- head.appendElement("script")
     } yield d
     doc.withModifications(modifications).html shouldBe "<html><head><script></script></head><body></body></html>"
+  }
+
+  "setAttr" should "work for string or boolean attributes" in {
+    val doc = ScalaSoup.parse("<body></body>")
+    mutable.MutableNode(doc.head.get).remove()
+
+    doc.head shouldBe empty
+    val modifications = for {
+      d <- modifyDocument
+      _ <- d.setOutputSettings(d.outputSettings.copy(prettyPrint = false))
+      body = d.body.get
+      _ <- body.setAttr("data-str", "blah")
+      _ <- body.setBooleanAttr("data-bool", true)
+    } yield d
+    doc.withModifications(modifications).html shouldBe
+      "<html><body data-str=\"blah\" data-bool></body></html>"
   }
 }
