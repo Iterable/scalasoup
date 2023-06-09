@@ -143,7 +143,7 @@ val modifications = for {
 } yield ()
 
 val originalDocument = ScalaSoup.parse(...)
-val updatedDocument = originalDocument.withModifications(modifications) 
+val updatedDocument = originalDocument.modify(modifications) 
 ```
 
 Some things to observe:
@@ -152,7 +152,7 @@ Some things to observe:
 2. Our entry-point to the DSL is `modifyDocument`.
 3. Using a for comprehension, we assemble a _description_ of our modifications.
 4. The description of our modifications doesn't actually do anything (yet).
-5. We execute our modifications by calling `withModifications` on a document. It is at this point that the document is cloned.
+5. We execute our modifications by calling `modify` on a document. It is at this point that the document is cloned.
 6. The cloned document is modified using the underlying JSoup methods and an immutable wrapper is returned to us.
 7. The DSL consistently prefixes the mutating methods with `set` (e.g. `setTitle`, `setHtml`). JSoup _almost_ never prefixes setters with `set`. These are all mutating methods in Jsoup: `setBaseUri`, `setWholeData`, `title`, `html`. In ScalaSoup these are always prefixed with `set` and _only_ appear in the DSL.
 
@@ -170,7 +170,7 @@ val modifications = for {
 
 val doc = ScalaSoup.parse("<a target=\"_blank\"></a>")
 
-val result = doc.withModifications(modifications)
+val result = doc.modify(modifications)
 ```
 
 Here's an example that builds one DSL program based on another:
@@ -186,7 +186,23 @@ val modifications = for {
 } yield ()
 
 val doc = ScalaSoup.parse("<a></a>")
-val updated = doc.withModifications(modifications)
+val updated = doc.modify(modifications)
+```
+
+Here's an example that builds a DSL with some accumulated value using `modifyAndAccumulate` instead of `modify`:
+
+```scala
+val modifications = for {
+   document <- modifyDocument
+   target   <- document.selectChildren("a").foldMapM { e =>
+      val originalTarget = e.attr("target")
+      e.removeAttr("target").map(_ => List(originalTarget))
+   }
+} yield target
+
+val doc = ScalaSoup.parse("<a target=\"_blank\"></a><a target=\"blah\"></a>")
+
+val (result, removedTargets) = doc.modifyAndAccumulate(modifications)
 ```
 
 ParentState
@@ -290,7 +306,7 @@ val modifications = for {
 
 val document = ScalaSoup.parse("<div><a></a></div>")
 
-val updated = document.withModifications(modifications)
+val updated = document.modify(modifications)
 ```
 
 In the above example we:
@@ -556,7 +572,7 @@ val modifications = for {
   _   <- div.replaceWith(doc1.selectFirstChild("span").get)
 } yield ()
 
-val updatedDoc2 = doc2.withModifications(modifications)
+val updatedDoc2 = doc2.modify(modifications)
 ```
 
 This time around, neither doc2 _nor_ doc1 are mutated. ScalaSoup achieves this by cloning arguments to `replaceWith` and other similar methods. 

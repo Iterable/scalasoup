@@ -16,7 +16,7 @@ class DslSpec extends AnyFlatSpec with Matchers {
 
     val doc = ScalaSoup.parse("<html><head><title>Old Title</title></head><body></body></html>")
 
-    val result = doc.withModifications(modifications)
+    val result = doc.modify(modifications)
 
     doc.title shouldBe "Old Title"
     doc.baseUri shouldBe ""
@@ -39,7 +39,7 @@ class DslSpec extends AnyFlatSpec with Matchers {
     } yield ()
 
     val result = ScalaSoup.parse("<html><head><title>Old Title</title></head><body><div><a></a></div></body></html>")
-      .withModifications(modifications1 flatMap { _ => modifications2 })
+      .modify(modifications1 flatMap { _ => modifications2 })
 
     result.title shouldBe "New Title"
     result.baseUri shouldBe "https://jsoup.org/"
@@ -59,7 +59,7 @@ class DslSpec extends AnyFlatSpec with Matchers {
 
     val doc = ScalaSoup.parse("<html><head><title>Old Title</title></head><body></body></html>")
 
-    val result = doc.withModifications(modifications)
+    doc.modify(modifications)
   }
 
   "Editing the body element" should "leave the original document unchanged" in {
@@ -70,7 +70,7 @@ class DslSpec extends AnyFlatSpec with Matchers {
 
     val doc = ScalaSoup.parse("<html><body><div></div></body></html>")
 
-    val result = doc.withModifications(modifications)
+    val result = doc.modify(modifications)
 
     doc.body shouldBe defined
     doc.body.get.hasClass("foo") shouldBe false
@@ -87,7 +87,7 @@ class DslSpec extends AnyFlatSpec with Matchers {
 
     val doc = ScalaSoup.parse("<a target=\"_blank\"></a>")
 
-    val result = doc.withModifications(modifications)
+    val result = doc.modify(modifications)
 
     result.html should not include "target"
     doc.html should include ("target")
@@ -101,7 +101,7 @@ class DslSpec extends AnyFlatSpec with Matchers {
 
     val doc = ScalaSoup.parse("<a target=\"_blank\"></a>")
 
-    val result = doc.withModifications(modifications)
+    val result = doc.modify(modifications)
 
     result.html should not include "target"
     doc.html should include ("target")
@@ -116,7 +116,7 @@ class DslSpec extends AnyFlatSpec with Matchers {
     } yield d
 
     an [IllegalStateException] should be thrownBy {
-      doc.withModifications(modifications)
+      doc.modify(modifications)
     }
   }
 
@@ -129,7 +129,7 @@ class DslSpec extends AnyFlatSpec with Matchers {
     } yield d
 
     an [IllegalStateException] should be thrownBy {
-      doc.withModifications(modifications)
+      doc.modify(modifications)
     }
   }
 
@@ -142,7 +142,7 @@ class DslSpec extends AnyFlatSpec with Matchers {
     } yield d
 
     an [IllegalStateException] should be thrownBy {
-      doc.withModifications(modifications)
+      doc.modify(modifications)
     }
   }
 
@@ -154,7 +154,7 @@ class DslSpec extends AnyFlatSpec with Matchers {
       _ <- d.head.foldMapM(_.remove)
     } yield d
 
-    val result = doc.withModifications(modifications)
+    val result = doc.modify(modifications)
 
     doc.head should not be empty
     result.head should be (empty)
@@ -168,7 +168,7 @@ class DslSpec extends AnyFlatSpec with Matchers {
       _ <- d.body.foldMapM(_.remove)
     } yield d
 
-    val result = doc.withModifications(modifications)
+    val result = doc.modify(modifications)
 
     doc.body should not be empty
     result.body should be (empty)
@@ -195,7 +195,7 @@ class DslSpec extends AnyFlatSpec with Matchers {
       body <- d.getOrCreateBody
       _ <- body.appendElement("span")
     } yield d
-    doc.withModifications(modifications).html shouldBe "<html><head></head><body><span></span></body></html>"
+    doc.modify(modifications).html shouldBe "<html><head></head><body><span></span></body></html>"
   }
 
   "getOrCreateHead" should "get or create the head element if it was removed" in {
@@ -209,7 +209,7 @@ class DslSpec extends AnyFlatSpec with Matchers {
       head <- d.getOrCreateHead
       _ <- head.appendElement("script")
     } yield d
-    doc.withModifications(modifications).html shouldBe "<html><head><script></script></head><body></body></html>"
+    doc.modify(modifications).html shouldBe "<html><head><script></script></head><body></body></html>"
   }
 
   "setAttr" should "work for string or boolean attributes" in {
@@ -224,7 +224,42 @@ class DslSpec extends AnyFlatSpec with Matchers {
       _ <- body.setAttr("data-str", "blah")
       _ <- body.setBooleanAttr("data-bool", true)
     } yield d
-    doc.withModifications(modifications).html shouldBe
+    doc.modify(modifications).html shouldBe
       "<html><body data-str=\"blah\" data-bool></body></html>"
+  }
+
+  "modifyAndAccumulate" should "modify and return the accumulated value" in {
+    val doc = ScalaSoup.parse("<body></body>")
+    mutable.MutableNode(doc.head.get).remove()
+
+    doc.head shouldBe empty
+    val modifications = for {
+      d <- modifyDocument
+      _ <- d.setOutputSettings(d.outputSettings.copy(prettyPrint = false))
+      body = d.body.get
+      a <- body.setAttr("data-str", "blah").map(_ => 1)
+      b <- body.setBooleanAttr("data-bool", true).map(_ => 2)
+      c <- body.appendElement("div").map(_ => 3)
+    } yield List(a, b, c)
+    val (result, acc) = doc.modifyAndAccumulate(modifications)
+    result.html shouldBe "<html><body data-str=\"blah\" data-bool><div></div></body></html>"
+    acc shouldBe List(1, 2, 3)
+  }
+
+  it should "fold accumulated values into a single list" in {
+    val modifications = for {
+      document <- modifyDocument
+      target   <- document.selectChildren("a").foldMapM { e =>
+        val originalTarget = e.attr("target")
+        e.removeAttr("target").map(_ => List(originalTarget))
+      }
+    } yield target
+
+    val doc = ScalaSoup.parse("<a target=\"_blank\"></a><a target=\"blah\"></a>", org.jsoup.parser.Parser.xmlParser())
+
+    val (result, removedTargets) = doc.modifyAndAccumulate(modifications)
+
+    result.html shouldBe "<a></a><a></a>"
+    removedTargets shouldBe List("_blank", "blah")
   }
 }

@@ -128,10 +128,22 @@ package object impl {
       * @param program The modifications to apply to the document.
       * @return A clone of the document with the described modifications applied.
       */
-    def withModifications(program: Modification[_]): Document[ParentState.NoParent] = {
+    def modify(program: Modification[_]): Document[ParentState.NoParent] = {
       val clone = document.clone
       program.foldMap(Compiler(clone))
       clone
+    }
+
+    /**
+      * Clone a document and apply the specified modifications.
+      * This also returns the accumulated value from the Modification in a tuple with the modified document.
+      *
+      * @param program The modifications to apply to the document.
+      * @return A clone of the document with the described modifications applied.
+      */
+    def modifyAndAccumulate[A](program: Modification[A]): (Document[ParentState.NoParent], A) = {
+      val clone = document.clone
+      (clone, program.foldMap(Compiler(clone)))
     }
   }
 
