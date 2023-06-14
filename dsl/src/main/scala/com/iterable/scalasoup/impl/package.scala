@@ -165,6 +165,14 @@ package object impl {
     def setData(data: String): Modification[Unit] = modification(node, _.setData(data))
   }
 
+  class CommentDsl[B <: ParentState](val comment: Comment[B]) extends AnyVal {
+
+    private def modification[A](comment: Comment[B], mod: Comment[B] => A): Modification[A] =
+      liftF[ModificationA, A](CommentModification[A, B](comment, mod))
+
+    def setData(data: String): Modification[Unit] = modification(comment, _.setData(data))
+  }
+
   class AttributeDsl(val attribute: Attribute) extends AnyVal {
     def setKey(key: String): Modification[Unit] = liftF(AttributeModification(attribute, _.setKey(key)))
 

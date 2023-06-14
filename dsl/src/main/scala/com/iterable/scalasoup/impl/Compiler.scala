@@ -21,6 +21,7 @@ private[scalasoup] object Compiler {
           case NodeModification(node, mod) => withOwnerCheck(node, mod)
           case TextNodeModification(node, mod) => withOwnerCheck(node, mod)
           case DataNodeModification(node, mod) => withOwnerCheck(node, mod)
+          case CommentModification(comment, mod) => withOwnerCheck(comment, mod)
           case ElementModification(element, mod) => withOwnerCheck(element, mod)
           case DocumentModification(mod) => mod(document)
           case AttributeModification(attribute, mod) => withOwnerCheck(attribute, mod)

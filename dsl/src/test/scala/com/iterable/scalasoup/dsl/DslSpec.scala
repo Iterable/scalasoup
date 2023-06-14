@@ -2,6 +2,7 @@ package com.iterable.scalasoup.dsl
 
 import cats.implicits._
 import com.iterable.scalasoup._
+import org.jsoup.parser.Parser
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 
@@ -77,6 +78,58 @@ class DslSpec extends AnyFlatSpec with Matchers {
 
     result.body shouldBe defined
     result.body.get.hasClass("foo") shouldBe true
+  }
+
+  "Editing a conditional comment" should "replace the commented HTML" in {
+    val ConditionalCommentRegex = "^(?s)(?<condition>\\[if[^\\]]*\\]>)(?<conditionalHtml>.*)<!\\[endif\\]$".r
+    val ConditionalCommentEndTag = "<![endif]"
+
+    val modifications = for {
+      d <- modifyDocument
+      _    <- d.setOutputSettings(d.outputSettings.copy(prettyPrint = false))
+      body <- d.getOrCreateBody
+      _    <- body.childNodes.collect {
+        case comment: Comment[_] => comment.data match {
+          case ConditionalCommentRegex(condition, conditionalHtml) if conditionalHtml.nonEmpty =>
+            val modifiedCommentedHtml = ScalaSoup.parse(conditionalHtml, Parser.xmlParser()).modify(
+              for {
+                cd <- modifyDocument
+                _  <- cd.setOutputSettings(cd.outputSettings.copy(prettyPrint = false))
+                _  <- cd.select("a[href]").foldMapM(_.setAttr("href", "https://google.com"))
+              } yield ()
+            )
+            (comment, condition + modifiedCommentedHtml.outerHtml + ConditionalCommentEndTag)
+          case _ =>
+            (comment, comment.data.replace("{{foo}}", "bar"))
+        }
+      }.foldMapM { case (comment, newData) => comment.setData(newData) }
+    } yield ()
+
+    val doc = ScalaSoup.parse(
+      """<html>
+        |<head></head>
+        |<body><!--{{foo}}-->
+        |<!--[if gt IE 9]>
+        |  <div>
+        |    <a href="localhost">link</a>
+        |  </div>
+        |<![endif]-->
+        |</body>
+        |</html>""".stripMargin
+    )
+
+    val result = doc.modify(modifications)
+    result.html shouldBe
+      """<html>
+        |<head></head>
+        |<body><!--bar-->
+        |<!--[if gt IE 9]>
+        |  <div>
+        |    <a href="https://google.com">link</a>
+        |  </div>
+        |<![endif]-->
+        |</body>
+        |</html>""".stripMargin
   }
 
   "Removing attributes" should "leave the original document unchanged" in {
@@ -255,7 +308,7 @@ class DslSpec extends AnyFlatSpec with Matchers {
       }
     } yield target
 
-    val doc = ScalaSoup.parse("<a target=\"_blank\"></a><a target=\"blah\"></a>", org.jsoup.parser.Parser.xmlParser())
+    val doc = ScalaSoup.parse("<a target=\"_blank\"></a><a target=\"blah\"></a>", Parser.xmlParser())
 
     val (result, removedTargets) = doc.modifyAndAccumulate(modifications)
 

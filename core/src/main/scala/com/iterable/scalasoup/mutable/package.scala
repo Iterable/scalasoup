@@ -48,6 +48,10 @@ package object mutable {
     def setData(data: String): Unit = node.underlying.setWholeData(data)
   }
 
+  private[scalasoup] implicit class MutableComment[A <: ParentState](val comment: Comment[A]) extends AnyVal {
+    def setData(data: String): Unit = comment.underlying.setData(data)
+  }
+
   private[scalasoup] implicit class MutableElement[A <: ParentState](val element: Element[A]) extends AnyVal {
 
     def setTagName(tagName: String): Unit = element.underlying.tagName(tagName)

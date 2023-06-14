@@ -12,6 +12,7 @@ package object dsl {
   implicit def nodeToDsl[A <: ParentState](node: Node[A]): NodeDsl[A] = new NodeDsl(node)
   implicit def textNodeToDsl[A <: ParentState](node: TextNode[A]): TextNodeDsl[A] = new TextNodeDsl(node)
   implicit def dataNodeToDsl[A <: ParentState](node: DataNode[A]): DataNodeDsl[A] = new DataNodeDsl(node)
+  implicit def commentToDsl[A <: ParentState](comment: Comment[A]): CommentDsl[A] = new CommentDsl(comment)
   implicit def elementToDsl[A <: ParentState](element: Element[A]): ElementDsl[A] = new ElementDsl(element)
   implicit def documentToDsl(document: Document[ParentState.NoParent]): DocumentDsl = new DocumentDsl(document)
   implicit def attributeToDsl(attribute: Attribute): AttributeDsl = new AttributeDsl(attribute)

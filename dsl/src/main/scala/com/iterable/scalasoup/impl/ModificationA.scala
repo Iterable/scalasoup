@@ -10,6 +10,8 @@ final case class TextNodeModification[A, B <: ParentState](node: TextNode[B], mo
 
 final case class DataNodeModification[A, B <: ParentState](node: DataNode[B], mod: DataNode[B] => A) extends ModificationA[A]
 
+final case class CommentModification[A, B <: ParentState](comment: Comment[B], mod: Comment[B] => A) extends ModificationA[A]
+
 final case class ElementModification[A, B <: ParentState](element: Element[B], mod: Element[B] => A) extends ModificationA[A]
 
 final case class DocumentModification[A](mod: Document[ParentState.NoParent] => A) extends ModificationA[A]
