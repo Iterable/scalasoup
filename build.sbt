@@ -29,7 +29,7 @@ ThisBuild / sonatypeCredentialHost := "s01.oss.sonatype.org"
 sonatypeRepository := "https://s01.oss.sonatype.org/service/local"
 
 val commonSettings = Seq(
-  publishTo := sonatypePublishToBundle.value,
+//  publishTo := sonatypePublishToBundle.value,
     // TODO https://tpolecat.github.io/2017/04/25/scalac-flags.html
   scalacOptions      := Seq(
     "-deprecation",
