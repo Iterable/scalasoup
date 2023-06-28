@@ -1,4 +1,3 @@
-
 inThisBuild(List(
   scalaVersion := "2.13.7",
   crossScalaVersions := Seq(scalaVersion.value),
@@ -6,6 +5,9 @@ inThisBuild(List(
   organizationName := "Iterable",
   homepage := Some(url("https://github.com/Iterable/scalasoup")),
   licenses := List("Apache-2.0" -> url("http://www.apache.org/licenses/LICENSE-2.0")),
+  scmInfo := Some(
+    ScmInfo(url("https://github.com/Iterable/scalasoup"), "scm:git@github.com:Iterable/scalasoup.git")
+  ),
   developers := List(
     Developer(
       "danielnixon",
@@ -27,7 +29,8 @@ ThisBuild / sonatypeCredentialHost := "s01.oss.sonatype.org"
 sonatypeRepository := "https://s01.oss.sonatype.org/service/local"
 
 val commonSettings = Seq(
-  // TODO https://tpolecat.github.io/2017/04/25/scalac-flags.html
+  publishTo := sonatypePublishToBundle.value,
+    // TODO https://tpolecat.github.io/2017/04/25/scalac-flags.html
   scalacOptions      := Seq(
     "-deprecation",
   ),
