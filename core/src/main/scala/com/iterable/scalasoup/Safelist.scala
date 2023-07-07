@@ -45,13 +45,18 @@ final case class Safelist private[scalasoup] (
 object Safelist {
   type SafelistCall = org.jsoup.safety.Safelist => Unit
 
-  def none: Safelist = Safelist(() => org.jsoup.safety.Safelist.none(), List.empty[SafelistCall])
+  def copy(other: Safelist): Safelist = copy(other.underlying)
 
-  def simpleText: Safelist = Safelist(() => org.jsoup.safety.Safelist.none(), List.empty[SafelistCall])
+  def copy(underlying: org.jsoup.safety.Safelist): Safelist =
+    Safelist(() => new org.jsoup.safety.Safelist(underlying), List.empty)
 
-  def basic: Safelist = Safelist(() => org.jsoup.safety.Safelist.none(), List.empty[SafelistCall])
+  def none: Safelist = Safelist(() => org.jsoup.safety.Safelist.none(), List.empty)
 
-  def basicWithImages: Safelist = Safelist(() => org.jsoup.safety.Safelist.none(), List.empty[SafelistCall])
+  def simpleText: Safelist = Safelist(() => org.jsoup.safety.Safelist.simpleText(), List.empty)
 
-  def relaxed: Safelist = Safelist(() => org.jsoup.safety.Safelist.none(), List.empty[SafelistCall])
+  def basic: Safelist = Safelist(() => org.jsoup.safety.Safelist.basic(), List.empty)
+
+  def basicWithImages: Safelist = Safelist(() => org.jsoup.safety.Safelist.basicWithImages(), List.empty)
+
+  def relaxed: Safelist = Safelist(() => org.jsoup.safety.Safelist.relaxed(), List.empty)
 }
