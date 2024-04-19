@@ -76,8 +76,10 @@ sealed abstract class Node[A <: ParentState] private[scalasoup](private[scalasou
 
   override def toString: String = underlying.toString
 
-  @SuppressWarnings(Array("org.wartremover.warts.Equals"))
-  override def equals(other: Any): Boolean = underlying.equals(other)
+  override def equals(other: Any): Boolean = other match {
+    case otherNode: Node[_] => underlying.equals(otherNode.underlying)
+    case _ => false
+  }
 
   def hasSameValue(other: Any): Boolean = underlying.hasSameValue(other)
 
@@ -524,9 +526,6 @@ final class Document[A <: ParentState] private[scalasoup] (private[scalasoup] ov
 
   def createElement(tagName: String): Element[ParentState.NoParent] =
     Element.fromUnderlying(underlying.createElement(tagName))
-
-  @deprecated("normalization occurs during the HTML parse, this method is no longer useful and will be retired in the next release.")
-  def withNormalise(): Document [ParentState.NoParent]= withClone(_.normalise())
 
   def charset: Charset = underlying.charset
 

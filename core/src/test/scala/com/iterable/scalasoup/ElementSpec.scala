@@ -31,6 +31,13 @@ class ElementSpec extends AnyFlatSpec with Matchers {
     assertTypeError("""document.select("a[")""")
   }
 
+  "The equals method" should "check equality with the underlying JSoup Node and Attributes" in {
+    val doc = ScalaSoup.parse("""<html lang="en"><head></head><body title="Hello World">Hello, World!</body></html>""")
+    doc.body.get.childNodes.head.equals(doc.body.get.childNodes.head) shouldBe true
+    doc.body.get.attributes.head.equals(doc.body.get.attributes.head) shouldBe true
+    doc.body.get.attributes.equals(doc.body.get.attributes) shouldBe true
+  }
+
   "The Wikipedia readme example" should "compile" in {
     import org.http4s.blaze.client.BlazeClientBuilder
 

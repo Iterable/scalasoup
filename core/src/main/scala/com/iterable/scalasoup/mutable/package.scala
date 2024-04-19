@@ -103,8 +103,6 @@ package object mutable {
 
     def setTitle(title: String): Unit = document.underlying.title(title)
 
-    def normalise(): Unit = document.underlying.normalise()
-
     def head(): Element[ParentState.HasParent] = new Element(document.underlying.head())
 
     def body(): Element[ParentState.HasParent] = new Element(document.underlying.body())

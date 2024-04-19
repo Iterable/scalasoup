@@ -105,8 +105,6 @@ package object impl {
 
     def setTitle(title: String): Modification[Unit] = modification(_.setTitle(title))
 
-    def normalise: Modification[Unit] = modification(_.normalise())
-
     def getOrCreateHead: Modification[Element[ParentState.HasParent]] = modification(_.head())
 
     def getOrCreateBody: Modification[Element[ParentState.HasParent]] = modification(_.body())
