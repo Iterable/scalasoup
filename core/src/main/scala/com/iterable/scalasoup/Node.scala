@@ -76,6 +76,7 @@ sealed abstract class Node[A <: ParentState] private[scalasoup](private[scalasou
 
   override def toString: String = underlying.toString
 
+  @SuppressWarnings(Array("org.wartremover.warts.Equals"))
   override def equals(other: Any): Boolean = other match {
     case otherNode: Node[_] => underlying.equals(otherNode.underlying)
     case _ => false

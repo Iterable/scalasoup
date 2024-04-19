@@ -21,6 +21,7 @@ final class Attribute(
 
   override def toString: String = underlying.toString
 
+  @SuppressWarnings(Array("org.wartremover.warts.Equals"))
   override def equals(other: Any): Boolean = other match {
     case otherAttr: Attribute => underlying.equals(otherAttr.underlying)
     case _ => false
@@ -75,6 +76,7 @@ final class Attributes(
 
   override def toString: String = underlying.toString
 
+  @SuppressWarnings(Array("org.wartremover.warts.Equals"))
   override def equals(other: Any): Boolean = other match {
     case otherAttrs: Attributes => underlying.equals(otherAttrs.underlying)
     case _ => false
